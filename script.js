@@ -133,9 +133,9 @@ submitBtn.addEventListener("click", () => {
   let isCorrect;
 
   if (!selected) {
-    // 未回答 → 不正解扱い
+    // 未回答 
     selectedIndex = -1;
-    userText = "未回答（不正解扱い）";
+    userText = "未回答";
     isCorrect = false;
   } else {
     selectedIndex = Number(selected.value);
