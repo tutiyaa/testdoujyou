@@ -1,0 +1,28 @@
+git remote add origin https://github.com/tutiyaa/testdoujyou.git
+ git branch -M main 
+git push -u origin main
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>基本情報過去問</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>基本情報過去問</h1>
+  <p class="page-description">正解だと思うところにクリックしてね</p>
+
+  <div class="quiz-container">
+    <div id="quiz"></div>
+
+    <button id="submitBtn">採点する</button>
+
+    <div id="result"></div>
+
+    <!-- 採点後に回答と解説を表示する場所 -->
+    <div id="explanations" class="explanations"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
