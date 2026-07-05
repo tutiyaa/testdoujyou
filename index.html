@@ -1,26 +1,42 @@
-git remote add origin https://github.com/tutiyaa/testdoujyou.git
- git branch -M main 
-git push -u origin main
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>基本情報過去問</title>
+  <title>基本情報過去問ミニ道場</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>基本情報過去問</h1>
-  <p class="page-description">正解だと思うところにクリックしてね</p>
+  <h1>基本情報過去問ミニ道場</h1>
+  <p class="page-description">
+    一問ずつ解いて、回答と解説を確認しながら進めましょう。
+  </p>
 
   <div class="quiz-container">
-    <div id="quiz"></div>
+    <!-- 何問目か表示 -->
+    <div id="progress" class="progress"></div>
 
-    <button id="submitBtn">採点する</button>
+    <!-- 現在の問題を表示する枠 -->
+    <div id="question-area" class="question-block">
+      <p id="question-text" class="question-text"></p>
+      <div id="choices-area"></div>
+    </div>
 
-    <div id="result"></div>
+    <!-- 回答後に正誤＋解説を表示する枠 -->
+    <div id="feedback" class="feedback">
+      <div id="judge"></div>
+      <p id="your-answer"></p>
+      <p id="correct-answer"></p>
+      <p id="explanation"></p>
+    </div>
 
-    <!-- 採点後に回答と解説を表示する場所 -->
-    <div id="explanations" class="explanations"></div>
+    <!-- ボタン類 -->
+    <div class="button-area">
+      <button id="submitBtn">この問題を採点する</button>
+      <button id="nextBtn" class="secondary" disabled>次の問題へ</button>
+    </div>
+
+    <!-- 最終スコア表示用 -->
+    <div id="final-score" class="final-score"></div>
   </div>
 
   <script src="script.js"></script>

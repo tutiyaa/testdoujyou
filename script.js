@@ -1,3 +1,4 @@
+// 問題データ
 const questions = [
   {
     text: "問1: 情報セキュリティの代表的な3つの要素として、最も適切なものはどれか。",
@@ -56,109 +57,135 @@ const questions = [
   }
 ];
 
-const quizDiv = document.getElementById("quiz");
-const resultDiv = document.getElementById("result");
+// DOM要素
+const progressEl = document.getElementById("progress");
+const questionTextEl = document.getElementById("question-text");
+const choicesAreaEl = document.getElementById("choices-area");
+
+const feedbackEl = document.getElementById("feedback");
+const judgeEl = document.getElementById("judge");
+const yourAnswerEl = document.getElementById("your-answer");
+const correctAnswerEl = document.getElementById("correct-answer");
+const explanationEl = document.getElementById("explanation");
+
 const submitBtn = document.getElementById("submitBtn");
-const explanationsDiv = document.getElementById("explanations");
+const nextBtn = document.getElementById("nextBtn");
 
-// 画面に問題を描画
-questions.forEach((q, qi) => {
-  const block = document.createElement("div");
-  block.className = "question-block";
+const finalScoreEl = document.getElementById("final-score");
 
-  const qText = document.createElement("p");
-  qText.className = "question-text";
-  qText.textContent = q.text;
-  block.appendChild(qText);
+let currentIndex = 0;
+let answeredThisQuestion = false;
+let score = 0; // 正解数
 
+// 現在の問題を描画
+function renderQuestion() {
+  const q = questions[currentIndex];
+
+  // 何問目か表示
+  progressEl.textContent = `第 ${currentIndex + 1} 問 / 全 ${questions.length} 問`;
+
+  // 問題文
+  questionTextEl.textContent = q.text;
+
+  // 選択肢の描画
+  choicesAreaEl.innerHTML = "";
   q.choices.forEach((choice, ci) => {
     const label = document.createElement("label");
     label.className = "choice-label";
 
     const radio = document.createElement("input");
     radio.type = "radio";
-    radio.name = `q${qi}`;
+    radio.name = "currentQuestion";
     radio.value = ci;
 
     label.appendChild(radio);
     label.append(` ${String.fromCharCode(65 + ci)}. ${choice}`);
-    block.appendChild(label);
+    choicesAreaEl.appendChild(label);
   });
 
-  quizDiv.appendChild(block);
-});
+  // フィードバックをリセット
+  feedbackEl.style.display = "none";
+  judgeEl.innerHTML = "";
+  yourAnswerEl.textContent = "";
+  correctAnswerEl.textContent = "";
+  explanationEl.textContent = "";
 
+  // ボタン状態
+  submitBtn.disabled = false;
+  nextBtn.disabled = true;
+
+  answeredThisQuestion = false;
+}
+
+// 採点処理（未回答は不正解扱い）
 submitBtn.addEventListener("click", () => {
-  let score = 0;
-  const userAnswers = [];
+  if (answeredThisQuestion) {
+    return;
+  }
 
-  // 採点
-  questions.forEach((q, qi) => {
-    const selected = document.querySelector(
-      `input[name="q${qi}"]:checked`
-    );
-    if (selected) {
-      const selectedIndex = Number(selected.value);
-      userAnswers.push(selectedIndex);
-      if (selectedIndex === q.answerIndex) {
-        score++;
-      }
-    } else {
-      // 未回答の場合は -1 を入れておく
-      userAnswers.push(-1);
-    }
-  });
+  const q = questions[currentIndex];
+  const selected = document.querySelector(
+    'input[name="currentQuestion"]:checked'
+  );
 
-  // 結果表示
-  resultDiv.textContent = `正解数: ${score} / ${questions.length}`;
+  let selectedIndex;
+  let userText;
+  let isCorrect;
 
-  // 解説エリアをクリア
-  explanationsDiv.innerHTML = "";
-
-  // 各問題の回答＋正解＋解説を表示
-  questions.forEach((q, qi) => {
-    const expBlock = document.createElement("div");
-    expBlock.className = "explanation-block";
-
-    const header = document.createElement("div");
-    header.className = "explanation-header";
-
-    const userIndex = userAnswers[qi];
-
-    let userText;
-    if (userIndex === -1) {
-      userText = "未回答";
-    } else {
-      userText = `${String.fromCharCode(65 + userIndex)}. ${
-        q.choices[userIndex]
-      }`;
-    }
-
-    const correctText = `${q.correctChoiceLabel}. ${
-      q.choices[q.answerIndex]
+  if (!selected) {
+    // 未回答 → 不正解扱い
+    selectedIndex = -1;
+    userText = "未回答（不正解扱い）";
+    isCorrect = false;
+  } else {
+    selectedIndex = Number(selected.value);
+    isCorrect = selectedIndex === q.answerIndex;
+    userText = `${String.fromCharCode(65 + selectedIndex)}. ${
+      q.choices[selectedIndex]
     }`;
+  }
 
-    const isCorrect = userIndex === q.answerIndex;
+  // 正解ならスコア加算
+  if (isCorrect) {
+    score++;
+  }
 
-    header.innerHTML = `問${qi + 1} ${
-      isCorrect ? "<span class=\"correct\">正解</span>"
-                : "<span class=\"incorrect\">不正解</span>"
-    }`;
+  // フィードバック表示
+  feedbackEl.style.display = "block";
 
-    const userP = document.createElement("p");
-    userP.textContent = `あなたの回答: ${userText}`;
+  judgeEl.innerHTML = isCorrect
+    ? '<span class="correct">正解です！</span>'
+    : '<span class="incorrect">不正解です。</span>';
 
-    const correctP = document.createElement("p");
-    correctP.textContent = `正解: ${correctText}`;
+  const correctText = `${q.correctChoiceLabel}. ${q.choices[q.answerIndex]}`;
 
-    const expP = document.createElement("p");
-    expP.textContent = `解説: ${q.explanation}`;
+  yourAnswerEl.textContent = `あなたの回答: ${userText}`;
+  correctAnswerEl.textContent = `正解: ${correctText}`;
+  explanationEl.textContent = `解説: ${q.explanation}`;
 
-    expBlock.appendChild(header);
-    expBlock.appendChild(userP);
-    expBlock.appendChild(correctP);
-    expBlock.appendChild(expP);
-
-    explanationsDiv.appendChild(expBlock);
-  });
+  // 次の問題へボタンを有効化
+  nextBtn.disabled = false;
+  submitBtn.disabled = true;
+  answeredThisQuestion = true;
 });
+
+// 次の問題へ
+nextBtn.addEventListener("click", () => {
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    renderQuestion();
+  } else {
+    // 最後の問題が終わったとき
+    progressEl.textContent = "全ての問題が終了しました。お疲れさまでした！";
+    questionTextEl.textContent = "";
+    choicesAreaEl.innerHTML = "";
+    feedbackEl.style.display = "none";
+    submitBtn.disabled = true;
+    nextBtn.disabled = true;
+
+    finalScoreEl.textContent = `最終正解数: ${score} / ${questions.length}`;
+  }
+});
+
+// 初期表示
+renderQuestion();
