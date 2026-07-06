@@ -1,3 +1,6 @@
+// アイウエラベル
+const kanaLabels = ["ア", "イ", "ウ", "エ"];
+
 // 問題データ
 const questions = [
   {
@@ -10,8 +13,7 @@ const questions = [
     ],
     answerIndex: 1,
     explanation:
-      "情報セキュリティの3要素は、機密性・完全性・可用性です。機密性は許可された人だけが情報にアクセスできること、完全性は情報が改ざんされていないこと、可用性は必要なときに利用できることを意味します。",
-    correctChoiceLabel: "B"
+      "情報セキュリティの3要素は、機密性・完全性・可用性です。機密性は許可された人だけが情報にアクセスできること、完全性は情報が改ざんされていないこと、可用性は必要なときに利用できることを意味します。"
   },
   {
     text: "問2: OSI基本参照モデルの各層で中継する装置を，物理層で中継する装置，データリンク層で中継する装置，ネットワーク層で中継する装置の順に並べたものはどれか。",
@@ -23,8 +25,7 @@ const questions = [
     ],
     answerIndex: 2,
     explanation:
-      "物理層で動作する中継装置はリピータ、データリンク層はブリッジ、ネットワーク層はルータです。したがって「リピータ／ブリッジ／ルータ」の順に並べるのが正解です。",
-    correctChoiceLabel: "C"
+      "物理層で動作する中継装置はリピータ、データリンク層はブリッジ、ネットワーク層はルータです。したがって「リピータ／ブリッジ／ルータ」の順に並べるのが正解です。"
   },
   {
     text: "問3: IPv6アドレスの特徴として，最も適切なものはどれか。",
@@ -36,24 +37,21 @@ const questions = [
     ],
     answerIndex: 3,
     explanation:
-      "IPv6アドレスは128ビット長で、16進数を4文字ずつコロン区切りで表記します。例：「2001:db8::1」などの形式です。",
-    correctChoiceLabel: "D"
+      "IPv6アドレスは128ビット長で、16進数を4文字ずつコロン区切りで表記します。例：「2001:db8::1」などの形式です。"
   },
   {
     text: "問4: インターネットにおける電子メールの規約で，ヘッダフィールドの拡張を行い，テキストだけでなく，音声，画像なども扱えるようにしたものはどれか。",
     choices: ["HTML", "MIME", "SMTP", "POP3"],
     answerIndex: 1,
     explanation:
-      "MIMEは電子メールの拡張規格で、文字だけでなく画像・音声・動画などを扱えるようにしたものです。SMTPは送信プロトコル、POP3は受信プロトコルです。",
-    correctChoiceLabel: "B"
+      "MIMEは電子メールの拡張規格で、文字だけでなく画像・音声・動画などを扱えるようにしたものです。SMTPは送信プロトコル、POP3は受信プロトコルです。"
   },
   {
     text: "問5: IPネットワークにおいて，ICMPのエコー要求，エコー応答，到達不能メッセージなどによって，通信相手との接続性を確認するコマンドはどれか。",
     choices: ["arp", "ipconfig", "ping", "netstat"],
     answerIndex: 2,
     explanation:
-      "pingはICMPのエコー要求・応答を使ってネットワーク疎通を確認するコマンドです。arpはIPとMACの対応確認、ipconfigはIP設定表示、netstatは接続・ポート状態の確認に用います。",
-    correctChoiceLabel: "C"
+      "pingはICMPのエコー要求・応答を使ってネットワーク疎通を確認するコマンドです。arpはIPとMACの対応確認、ipconfigはIP設定表示、netstatは接続・ポート状態の確認に用います。"
   }
 ];
 
@@ -87,7 +85,7 @@ function renderQuestion() {
   // 問題文
   questionTextEl.textContent = q.text;
 
-  // 選択肢の描画
+  // 選択肢の描画（アイウエ）
   choicesAreaEl.innerHTML = "";
   q.choices.forEach((choice, ci) => {
     const label = document.createElement("label");
@@ -99,7 +97,7 @@ function renderQuestion() {
     radio.value = ci;
 
     label.appendChild(radio);
-    label.append(` ${String.fromCharCode(65 + ci)}. ${choice}`);
+    label.append(` ${kanaLabels[ci]}．${choice}`);
     choicesAreaEl.appendChild(label);
   });
 
@@ -133,16 +131,14 @@ submitBtn.addEventListener("click", () => {
   let isCorrect;
 
   if (!selected) {
-    // 未回答 
+    // 未回答 → 不正解扱い
     selectedIndex = -1;
-    userText = "未回答";
+    userText = "未回答（不正解扱い）";
     isCorrect = false;
   } else {
     selectedIndex = Number(selected.value);
     isCorrect = selectedIndex === q.answerIndex;
-    userText = `${String.fromCharCode(65 + selectedIndex)}. ${
-      q.choices[selectedIndex]
-    }`;
+    userText = `${kanaLabels[selectedIndex]}．${q.choices[selectedIndex]}`;
   }
 
   // 正解ならスコア加算
@@ -157,7 +153,8 @@ submitBtn.addEventListener("click", () => {
     ? '<span class="correct">正解です！</span>'
     : '<span class="incorrect">不正解です。</span>';
 
-  const correctText = `${q.correctChoiceLabel}. ${q.choices[q.answerIndex]}`;
+  const correctKana = kanaLabels[q.answerIndex];
+  const correctText = `${correctKana}．${q.choices[q.answerIndex]}`;
 
   yourAnswerEl.textContent = `あなたの回答: ${userText}`;
   correctAnswerEl.textContent = `正解: ${correctText}`;
